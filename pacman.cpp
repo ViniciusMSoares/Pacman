@@ -43,14 +43,19 @@ void move(char dir){
 	int y = pacmanY;
 	switch(dir){
 		case 'w':
-			pacmanY += 1;
+			pacmanY -= 1;
+			break;
 		case 'a':
 			pacmanX -= 1;
+			break;
 		case 's':
-			pacmanY -= 1;
+			pacmanY += 1;
+			break;
 		case 'd':
 			pacmanX += 1;
+			break;
 	}
+	cout << pacmanY << " " << pacmanX << "\n";
 	modificaMapa(x, y);
 }
 
