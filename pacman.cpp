@@ -12,8 +12,8 @@ char mapa[20][21] = {
 "0..0000..00..0000..0",
 "0.000000.00.000000.0",
 "0........00........0",
-"00000000000000000000",
-"00000000000000000000",
+"0000.0000000000.0000",
+"000....000000....000",
 "0...00...00...00...0",
 "000....000000....000",
 "0...00...00...00...0",
@@ -24,8 +24,8 @@ char mapa[20][21] = {
 "0........00........0",
 "00000000000000000000"};
 
-int pacmanX = 14;
-int pacmanY = 11;
+int pacmanX = 10;
+int pacmanY = 14;
 
 void imprimeMapa(){
 	for (int i = 0; i < 20; i++){
@@ -38,9 +38,13 @@ void modificaMapa(int oldX, int oldY){
 	mapa[oldY][oldX] = ' ';
 }
 
-void move(char dir){
-	int x = pacmanX;
-	int y = pacmanY;
+void iniciaMapa(){
+	mapa[pacmanY][pacmanX] = 'p';
+}
+
+bool move(char dir){
+	int oldX = pacmanX;
+	int oldY = pacmanY;
 	switch(dir){
 		case 'w':
 			pacmanY -= 1;
@@ -55,12 +59,20 @@ void move(char dir){
 			pacmanX += 1;
 			break;
 	}
+	
+	if (mapa[pacmanY][pacmanX] == '0') {
+		pacmanX = oldX;
+		pacmanY = oldY;
+		return false;
+	}
+	
 	cout << pacmanY << " " << pacmanX << "\n";
-	modificaMapa(x, y);
+	modificaMapa(oldX, oldY);
+	return true;
 }
 
 int main() {
-	
+	iniciaMapa();
 	imprimeMapa();
 	
 	char comando;
@@ -69,6 +81,5 @@ int main() {
 		move(comando);
 		imprimeMapa();
 	}
-
 	
 }
