@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -24,10 +25,15 @@ char mapa[20][21] = {
 "0........00........0",
 "00000000000000000000"};
 
-int pacmanX = 10;
-int pacmanY = 14;
 int numVidas = 3;
 int pontuacao = 0;
+int pacmanX = 14;
+int pacmanY = 10;
+int monstro1X = 2;
+int monstro1Y = 5;
+int oldMonster1X;
+int oldMonster1Y;
+bool espacoComPontoMonstro1 = true;
 
 void imprimeMapa(){
 	for (int i = 0; i < 20; i++){
@@ -45,13 +51,50 @@ void resetaMapa(){
 	}
 }
 
+bool ehParede(int x, int y){
+	if (mapa[x][y] == '0'){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+bool ehPonto(int x, int y){
+	if (mapa[x][y] == '.'){
+		return true;
+	}else{
+		return false;
+	}
+}
+
 void modificaMapa(int oldX, int oldY){
-	mapa[pacmanY][pacmanX] = 'p';
-	mapa[oldY][oldX] = ' ';
+	mapa[pacmanX][pacmanY] = 'p';
+	mapa[oldX][oldY] = ' ';
 }
 
 void iniciaMapa(){
-	mapa[pacmanY][pacmanX] = 'p';
+	mapa[pacmanX][pacmanY] = 'p';
+	mapa[monstro1X][monstro1Y] = 'm';
+}
+
+void resetaPosicoes(){
+	cout << "posicao atual eh :" << espacoComPontoMonstro1 << endl;
+	if(ehPonto(oldMonster1X,oldMonster1Y)){
+		espacoComPontoMonstro1 = true;	
+	}else{
+		espacoComPontoMonstro1 = false;
+	}
+	if(espacoComPontoMonstro1 == 1){
+		mapa[monstro1X][monstro1Y] = '.';
+	}else{
+		mapa[monstro1X][monstro1Y] = ' ';
+	}
+	mapa[pacmanX][pacmanY];
+	
+	monstro1X = 2;
+	monstro1Y = 5;
+	pacmanX = 14;
+	pacmanY = 10;
 }
 
 void imprimeVidas(){
@@ -60,6 +103,18 @@ void imprimeVidas(){
 
 void imprimePontuacao(){
 	cout << "Pontos: " << pontuacao << endl;	
+}
+
+void estaMorto(){
+	if (monstro1X == pacmanX && monstro1Y == pacmanY){
+		numVidas -= 1;
+		resetaPosicoes();
+		iniciaMapa();
+		cout << "Voce morreu :(" << endl;
+		imprimeVidas();
+		imprimePontuacao();
+		imprimeMapa();
+	}
 }
 
 void passaDeFase(){
@@ -87,7 +142,6 @@ bool mapaVazio(){
 			}
 		}
 	}
-	
 	if(numPontos == 0){
 		return true;
 	}else{
@@ -95,32 +149,78 @@ bool mapaVazio(){
 	}
 }
 
+void moveMonsters(){
+	oldMonster1X = monstro1X;
+	oldMonster1Y = monstro1Y;
+	
+	int chancePerseguirVertical = rand() % 100;
+	
+	if(chancePerseguirVertical > 50){
+		if(oldMonster1X < pacmanX){
+			monstro1X += 1;
+		}else{
+			monstro1X -= 1;
+		}
+	}else{
+		if(oldMonster1Y < pacmanY){
+			monstro1Y += 1;
+		}else{
+			monstro1Y -= 1;
+		}
+	}
+	
+	if(ehPonto(monstro1X,monstro1Y)){
+		espacoComPontoMonstro1 = true;	
+	}else{
+		espacoComPontoMonstro1 = false;
+	}
+	
+	if(espacoComPontoMonstro1 == 1){
+		mapa[oldMonster1X][oldMonster1Y] = '.';
+	}else{
+		mapa[oldMonster1X][oldMonster1Y] = ' ';
+	}
+	cout << "Sentinela dos eespacos " << espacoComPontoMonstro1 << endl;
+	
+	if (ehParede(monstro1X,monstro1Y)) {
+		monstro1X = oldMonster1X;
+		monstro1Y = oldMonster1Y;
+	}
+	
+	mapa[monstro1X][monstro1Y] = 'm';
+	
+	
+}
+
 bool move(char dir){
 	int oldX = pacmanX;
 	int oldY = pacmanY;
 	switch(dir){
 		case 'w':
-			pacmanY -= 1;
-			break;
-		case 'a':
 			pacmanX -= 1;
 			break;
+		case 'a':
+			pacmanY -= 1;
+			break;
 		case 's':
-			pacmanY += 1;
+			pacmanX += 1;
 			break;
 		case 'd':
-			pacmanX += 1;
+			pacmanY += 1;
 			break;
 	}
 	
-	if (mapa[pacmanY][pacmanX] == '0') {
+	if(ehPonto(pacmanX,pacmanY) == 1){
+		marcaPonto();	
+	}
+	
+	if (mapa[pacmanX][pacmanY] == '0') {
 		pacmanX = oldX;
 		pacmanY = oldY;
 		return false;
 	}
 	
-	modificaMapa(oldX, oldY);
-	marcaPonto();
+	modificaMapa(oldX, oldY);	
 	return true;
 }
 
@@ -136,10 +236,17 @@ int main() {
 		move(comando);
 		imprimeVidas();
 		imprimePontuacao();
+		estaMorto();
+		moveMonsters();
 		imprimeMapa();
+		estaMorto();
+
+
 		if(mapaVazio() == 1){
 			passaDeFase();
 		};
+	
 	}
 	
 }
+
