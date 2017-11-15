@@ -35,6 +35,16 @@ void imprimeMapa(){
 	}
 }
 
+void resetaMapa(){
+	for(int i = 0; i < 20 ; i++){
+		for(int j = 0; j < 21; j++){
+			if (mapa[i][j] == ' ' || mapa[i][j] == 'p'){
+				mapa[i][j] = '.';
+			}
+		}
+	}
+}
+
 void modificaMapa(int oldX, int oldY){
 	mapa[pacmanY][pacmanX] = 'p';
 	mapa[oldY][oldX] = ' ';
@@ -52,8 +62,37 @@ void imprimePontuacao(){
 	cout << "Pontos: " << pontuacao << endl;	
 }
 
+void passaDeFase(){
+	pontuacao += 100;
+	resetaMapa();
+	pacmanX = 10;
+	pacmanY = 14;
+	iniciaMapa();
+	imprimeVidas();
+	imprimePontuacao();
+	imprimeMapa();
+}
+
 void marcaPonto(){
-	pontuacao += 10;
+	pontuacao += 1;
+}
+
+bool mapaVazio(){
+	int numPontos = 0;
+	
+	for(int i = 0; i < 20 ; i++){
+		for(int j = 0; j < 21; j++){
+			if (mapa[i][j] == '.'){
+				numPontos = numPontos + 1;
+			}
+		}
+	}
+	
+	if(numPontos == 0){
+		return true;
+	}else{
+		return false;
+	}
 }
 
 bool move(char dir){
@@ -80,7 +119,6 @@ bool move(char dir){
 		return false;
 	}
 	
-	cout << pacmanY << " " << pacmanX << "\n";
 	modificaMapa(oldX, oldY);
 	marcaPonto();
 	return true;
@@ -93,12 +131,15 @@ int main() {
 	imprimeMapa();
 	
 	char comando;
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 600; i++) {
 		cin >> comando;
 		move(comando);
 		imprimeVidas();
 		imprimePontuacao();
 		imprimeMapa();
+		if(mapaVazio() == 1){
+			passaDeFase();
+		};
 	}
 	
 }
