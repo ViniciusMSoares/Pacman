@@ -26,6 +26,8 @@ char mapa[20][21] = {
 
 int pacmanX = 10;
 int pacmanY = 14;
+int numVidas = 3;
+int pontuacao = 0;
 
 void imprimeMapa(){
 	for (int i = 0; i < 20; i++){
@@ -40,6 +42,18 @@ void modificaMapa(int oldX, int oldY){
 
 void iniciaMapa(){
 	mapa[pacmanY][pacmanX] = 'p';
+}
+
+void imprimeVidas(){
+	cout << "Vidas: " << numVidas << endl;
+}
+
+void imprimePontuacao(){
+	cout << "Pontos: " << pontuacao << endl;	
+}
+
+void marcaPonto(){
+	pontuacao += 10;
 }
 
 bool move(char dir){
@@ -68,17 +82,22 @@ bool move(char dir){
 	
 	cout << pacmanY << " " << pacmanX << "\n";
 	modificaMapa(oldX, oldY);
+	marcaPonto();
 	return true;
 }
 
 int main() {
 	iniciaMapa();
+	imprimeVidas();
+	imprimePontuacao();
 	imprimeMapa();
 	
 	char comando;
 	for (int i = 0; i < 100; i++) {
 		cin >> comando;
 		move(comando);
+		imprimeVidas();
+		imprimePontuacao();
 		imprimeMapa();
 	}
 	
