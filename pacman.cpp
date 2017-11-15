@@ -1,5 +1,7 @@
 #include <iostream>
 #include <stdlib.h>
+#include <string>
+#include <vector>
 
 using namespace std;
 
@@ -31,9 +33,10 @@ int pacmanX = 14;
 int pacmanY = 10;
 int monstro1X = 2;
 int monstro1Y = 5;
-int oldMonster1X;
-int oldMonster1Y;
 bool espacoComPontoMonstro1 = true;
+int listaRecords[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+string listaPlayers[10] = {"------", "------","------", "------", "------",
+ "------", "------", "------", "------", "------"};
 
 void imprimeMapa(){
 	for (int i = 0; i < 20; i++){
@@ -78,12 +81,8 @@ void iniciaMapa(){
 }
 
 void resetaPosicoes(){
-	cout << "posicao atual eh :" << espacoComPontoMonstro1 << endl;
-	if(ehPonto(oldMonster1X,oldMonster1Y)){
-		espacoComPontoMonstro1 = true;	
-	}else{
-		espacoComPontoMonstro1 = false;
-	}
+	// bug aqui: quando o monstro come o pacman se ele tiver com um ponto em cima
+	// ele desaparece.
 	if(espacoComPontoMonstro1 == 1){
 		mapa[monstro1X][monstro1Y] = '.';
 	}else{
@@ -150,11 +149,12 @@ bool mapaVazio(){
 }
 
 void moveMonsters(){
-	oldMonster1X = monstro1X;
-	oldMonster1Y = monstro1Y;
+	int oldMonster1X = monstro1X;
+	int oldMonster1Y = monstro1Y;
 	
 	int chancePerseguirVertical = rand() % 100;
 	
+
 	if(chancePerseguirVertical > 50){
 		if(oldMonster1X < pacmanX){
 			monstro1X += 1;
@@ -169,6 +169,7 @@ void moveMonsters(){
 		}
 	}
 	
+
 	if(ehPonto(monstro1X,monstro1Y)){
 		espacoComPontoMonstro1 = true;	
 	}else{
@@ -180,7 +181,6 @@ void moveMonsters(){
 	}else{
 		mapa[oldMonster1X][oldMonster1Y] = ' ';
 	}
-	cout << "Sentinela dos eespacos " << espacoComPontoMonstro1 << endl;
 	
 	if (ehParede(monstro1X,monstro1Y)) {
 		monstro1X = oldMonster1X;
@@ -224,29 +224,78 @@ bool move(char dir){
 	return true;
 }
 
-int main() {
+void registraRecord(){
+	
+}
+
+void isGameOver(){
+	if (numVidas == 0){
+		cout << "Suas vidas acabaram. GAME OVER" << endl;
+	}
+	if (pontuacao > listaRecords[10]){
+		cout << "Voce bateu ";
+	}
+}
+
+void imprimeIntro(){
+	cout << "======Olá Jogador======" << endl;
+	cout << "Escolha uma das opções" << endl;
+	cout << "1 - Jogar Pacman" << endl;
+	cout << "2 - Ver Recordes" << endl;
+	cout << "3 - Sair" << endl;
+}
+
+
+void listarRecordes(){
+	//organizar lista
+	 
+	cout << "~~~~Hall da Fama~~~~" << endl;
+	for (int i = 0; i < 10 ;i++){
+		cout << "* Nome " << listaPlayers[i] << "\t Pontuacao " << listaRecords[i] << '\n';
+	}
+}
+
+void inicializaJogo(){
 	iniciaMapa();
 	imprimeVidas();
 	imprimePontuacao();
 	imprimeMapa();
-	
-	char comando;
-	for (int i = 0; i < 600; i++) {
-		cin >> comando;
-		move(comando);
-		imprimeVidas();
-		imprimePontuacao();
-		estaMorto();
-		moveMonsters();
-		imprimeMapa();
-		estaMorto();
+}
 
+void passaTurno(char comando){
+	move(comando);
+	imprimeVidas();
+	imprimePontuacao();
+	estaMorto();
+	moveMonsters();
+	imprimeMapa();
+	estaMorto();
 
-		if(mapaVazio() == 1){
-			passaDeFase();
-		};
+	if(mapaVazio() == 1){
+		passaDeFase();
+	};
+}
+
+int main() {
 	
+	char opcao;
+	cin >> opcao;
+	switch(opcao){
+		case '1':
+			inicializaJogo();
+			char comando;
+			for (int i = 0; i < 600; i++) {
+				cin >> comando;
+				passaTurno(comando);
+			}
+			break;
+		case '2':
+			listarRecordes();
+			break;
+		case '3':
+			break;
 	}
 	
+	return 1;	
 }
 
