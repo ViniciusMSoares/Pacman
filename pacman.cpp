@@ -1,7 +1,6 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string>
-#include <vector>
 
 using namespace std;
 
@@ -88,7 +87,7 @@ void resetaPosicoes(){
 	}else{
 		mapa[monstro1X][monstro1Y] = ' ';
 	}
-	mapa[pacmanX][pacmanY];
+	mapa[pacmanX][pacmanY] = 'p';
 	
 	monstro1X = 2;
 	monstro1Y = 5;
@@ -224,30 +223,79 @@ bool move(char dir){
 	return true;
 }
 
-void registraRecord(){
-	
+void registraRecord(string nome){
+	listaPlayers[10] = nome;
+	listaRecords[10] = pontuacao;
+	pontuacao = 0;
 }
 
-void isGameOver(){
+bool isGameOver(){
 	if (numVidas == 0){
 		cout << "Suas vidas acabaram. GAME OVER" << endl;
+		if (pontuacao > listaRecords[10]){
+			cout << "Sua pontuação bateu recorde!!! Deseja entrar no Hall da Fama?" << endl;
+			cout << "1 para sim, 2 para nao" << endl;
+			char opcao;
+			cin >> opcao;
+			switch(opcao){
+			case '1':{
+				cout << "Digite seu nome!" << endl;
+				string nome;
+				cin >> nome;
+				registraRecord(nome);
+				break;}
+			case '2':
+				cout << "OK! até a próxima jogador." << endl;
+				break;
+			}
+		return true;
+	    }	
+		
 	}
-	if (pontuacao > listaRecords[10]){
-		cout << "Voce bateu ";
-	}
+	return false;
 }
 
 void imprimeIntro(){
-	cout << "======Olá Jogador======" << endl;
-	cout << "Escolha uma das opções" << endl;
+	cout << "======Ola Jogador======" << endl;
+	cout << "Escolha uma das opcoes" << endl;
 	cout << "1 - Jogar Pacman" << endl;
 	cout << "2 - Ver Recordes" << endl;
 	cout << "3 - Sair" << endl;
 }
 
+void swapInt(int *xp, int *yp)
+{
+    int temp = *xp;
+    *xp = *yp;
+    *yp = temp;
+}
+
+void swapString(string *xp, string *yp)
+{
+    string temp = *xp;
+    *xp = *yp;
+    *yp = temp;
+}
+ 
+void sort(int arrayRecordes[], string arrayNomes[], int n)
+{
+    int i, j, menorElem;
+ 
+    for (i = 0; i < n-1; i++)
+    {
+        menorElem = i;
+        for (j = i+1; j > n; j++)
+          if (arrayRecordes[j] > arrayRecordes[menorElem])
+            menorElem = j;
+ 
+        swapInt(&arrayRecordes[menorElem], &arrayRecordes[i]);
+        swapString(&arrayNomes[menorElem], &arrayNomes[i]);
+    }
+}
+
 
 void listarRecordes(){
-	//organizar lista
+	sort(listaRecords, listaPlayers, 10);
 	 
 	cout << "~~~~Hall da Fama~~~~" << endl;
 	for (int i = 0; i < 10 ;i++){
@@ -278,20 +326,29 @@ void passaTurno(char comando){
 
 int main() {
 	
+	imprimeIntro();
+	
 	char opcao;
 	cin >> opcao;
 	switch(opcao){
-		case '1':
+		case '1':{
 			inicializaJogo();
 			char comando;
-			for (int i = 0; i < 600; i++) {
+			int continua = 1;
+			while (continua == 1) {
 				cin >> comando;
 				passaTurno(comando);
+				if(isGameOver()){
+					continua = 0;
+				}
 			}
 			break;
+		}
 		case '2':
+		{
 			listarRecordes();
 			break;
+		}
 		case '3':
 			break;
 	}
