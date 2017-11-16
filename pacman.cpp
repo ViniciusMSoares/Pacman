@@ -292,17 +292,17 @@ void swapString(string *xp, string *yp)
 void sort()
 {
 	int n = 10;
-    int i, j, menorElem;
+    int i, j, maiorElem;
  
     for (i = 0; i < n-1; i++)
     {
-        menorElem = i;
-        for (j = i+1; j > n; j++)
-          if (listaRecords[j] > listaRecords[menorElem])
-            menorElem = j;
+        maiorElem = i;
+        for (j = i+1; j < n; j++)
+          if (listaRecords[j] > listaRecords[maiorElem])
+            maiorElem = j;
  
-        swapInt(&listaRecords[menorElem], &listaRecords[i]);
-        swapString(&listaPlayers[menorElem], &listaPlayers[i]);
+        swapInt(&listaRecords[maiorElem], &listaRecords[i]);
+        swapString(&listaPlayers[maiorElem], &listaPlayers[i]);
     }
 }
 
@@ -311,7 +311,8 @@ void listarRecordes(){
 	 
 	cout << "~~~~Hall da Fama~~~~" << endl;
 	for (int i = 0; i < 10 ;i++){
-		cout << "* Nome " << listaPlayers[i] << "\t Pontuacao " << listaRecords[i] << '\n';
+		cout << "* Nome " << listaPlayers[i] << 
+		"                       Pontuacao " << << listaRecords[i] << '\n';
 	}
 }
 
