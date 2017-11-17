@@ -11,42 +11,43 @@ using namespace std;
 Ghost::Ghost(Game *const g)
 : game(g) {}
 
-// move the ghost based on the current mode every time the wait timer reaches 0
+// Se move quando a contagem do tempo chega a 0
 void Ghost::Move(int playerY, int playerX) {
     if (wait) {
         --wait;
     }
     else {
         switch (mode) {
-        // if 'waiting'
-        // bounce up and down
+        //mode de espera = 'w'aitng
         case 'w':
             Hide();
-            if (y == GATE_Y + 2) {
-                ++y;
+            if (posY == GATE_Y + 2) {
+                ++posY;
             }
             else {
-                --y;
+                --posY;
             }
             Show();
+            //tempo maximo de espera dos fantasmas
             wait = GHOST_MAX;
             break;
+            //modo vagante
         case 'e':
             Hide();
             wait = GHOST_MAX;
-            if (y > GATE_Y + 1) {
-                --y;
+            if (posY > GATE_Y + 1) {
+                --posY;
             }
-            else if (x < GATE_X) {
-                ++x;
+            else if (posX < GATE_X) {
+                ++posX;
             }
-            else if (x > GATE_X) {
-                --x;
+            else if (posX > GATE_X) {
+                --posX;
             }
-            else if (y != GATE_Y - 1) {
-                --y;
+            else if (posY != GATE_Y - 1) {
+                --posY;
                 SetCursorPosition(GATE_Y, GATE_X + 1);
-                cout << game->GetLevel(GATE_Y, GATE_X + 1);
+                cout << game->GetMapChar(GATE_Y, GATE_X + 1);
             }
             else {
                 modeOld = mode;
@@ -56,19 +57,18 @@ void Ghost::Move(int playerY, int playerX) {
                 else {
                     mode = 'c';
                 }
-                dirOld = 'w';
+                directionOld = 'w';
                 wait = 0;
             }
             Show();
             break;
-        // if 'entering'
-        // enter the ghost house, then 'exit'
+        //Saindo Do portal central
         case 'n':
-            if (y != GATE_Y + 1) {
-                dir = 's';
+            if (posY != GATE_Y + 1) {
+                direction = 's';
                 ChangeCoords();
                 SetCursorPosition(GATE_Y, GATE_X + 1);
-                cout << game->GetLevel(GATE_Y, GATE_X + 1);
+                cout << game->GetMapChar(GATE_Y, GATE_X + 1);
                 wait = DEAD_MAX;
             }
             else {
@@ -77,33 +77,31 @@ void Ghost::Move(int playerY, int playerX) {
                 icon = GHOST_ICON;
             }
             break;
-        // if 'scattering'
-        // move in a random direction
+        // movimento aleatorio
         case 's':
             GetOpposite();
             if (modeOld == 'e') {
                 modeOld = mode;
             }
             if (mode != modeOld) {
-                dir = dirOpp;
+                direction = directionOps;
                 ChangeCoords();
                 modeOld = mode;
             }
             else {
                 RandomDirection();
             }
-            dirOld = dir;
+            directionOld = direction;
             wait = GHOST_MAX;
             break;
-        // if 'chasing'
-        // target the player
+        //modo de perseguicao
         case 'c':
             GetOpposite();
             if (modeOld == 'e') {
                 modeOld = mode;
             }
             if (mode != modeOld) {
-                dir = dirOpp;
+               direction = directionOld;
                 ChangeCoords();
                 modeOld = mode;
             }
@@ -112,69 +110,68 @@ void Ghost::Move(int playerY, int playerX) {
                 bool up = y > playerY;
                 bool right = x < playerX;
                 bool left = x > playerX;
-                bool favorableDirs[4] = { up, left, down, right };
-                TargetObject(favorableDirs);
+                bool favorableDirections[4] = { up, left, down, right };
+                HunterMode(favorableDirections);
             }
-            dirOld = dir;
+            directionOld = direction;
             wait = GHOST_MAX;
             break;
         }
     }
 }
 
-void Ghost::TargetObject(bool favorableDirs[4]) {
-    int good = 0;
-    char goodDirs[4] = {' ',' ',' ',' '};
+void Ghost::HunterMode(bool favorableDirections[4]) {
+    int aux = 0;
+    char auxDirections[4] = {' ',' ',' ',' '};
     for (int i = 0; i < 4; ++i) {
-        dir = ALL_DIRS[i];
-        if (favorableDirs[i] && TestForCollision() == false && dir != dirOpp) {
-            goodDirs[good] = dir;
-            ++good;
+        dir = DIRECTION[i];
+        if (favorableDirections[i] && TestCollision() == false && direction != directionOps) {
+            auxDirections[good] = direction;
+            ++aux;
         }
     }
-    if (good == 0) {
+    if (aux == 0) {
         RandomDirection();
     }
     else {
-        dir = goodDirs[rand() % good];
+        dir = favorableDirections[rand() % aux];
         ChangeCoords();
     }
 }
 
 void Ghost::RandomDirection() {
     GetOpposite();
-    // pick a random direction that results in no collision
     do {
         // pick a randon direction that is not opposite of the previous direction
         do {
-            dir = ALL_DIRS[rand() % 4];
-        } while (dir == dirOpp);
-    } while (TestForCollision() == true);
+            dir = DIRECTION[rand() % 4];
+        } while (direction == directionOpp);
+    } while (TestCollision() == true);
     ChangeCoords();
 }
 
-bool Ghost::TestForCollision() {
+bool Ghost::TestCollision() {
     // if the character in front of the ghost is a space, move in the appropriate direction
-    switch(dir) {
+    switch(direction) {
     case 'a':
         // if travelling through the tunnel
-        if (x == 0 || strchr(NO_COLLISION_TILES, game->GetLevel(y, x - 1))) {
+        if (posX == 0 || strchr(NO_COLLISION_CHAR, game->GetMapChar(posY, posX - 1))) {
             return false;
         }
         break;
     case 'd':
         // if travelling through the tunnel
-        if (x == LEVEL_WIDTH - 1 || strchr(NO_COLLISION_TILES, game->GetLevel(y, x + 1))) {
+        if (posX == MAP_WIDTH - 1 || strchr(NO_COLLISION_CHARISION_TILES, game->GetMapChar(posY, posX + 1))) {
             return false;
         }
         break;
     case 'w':
-        if (strchr(NO_COLLISION_TILES, game->GetLevel(y - 1, x))) {
+        if (strchr(NO_COLLISION_CHAR, game->GetMapChar(posY - 1, posX))) {
             return false;
         }
         break;
     case 's':
-        if (strchr(NO_COLLISION_TILES, game->GetLevel(y + 1, x))) {
+        if (strchr(NO_COLLISION_CHAR, game->GetMapChar(posY + 1, posX))) {
             return false;
         }
         break;
@@ -184,43 +181,43 @@ bool Ghost::TestForCollision() {
 
 void Ghost::ChangeCoords() {
     Hide();
-    if (dir == 'a') {
-        if (x == 0) {
-            x = LEVEL_WIDTH - 1;
+    if (direction == 'a') {
+        if (posX == 0) {
+            posX = MAP_WIDTH - 1;
         }
         else {
-            --x;
+            --posX;
         }
     }
-    if (dir == 'd') {
-        if (x == LEVEL_WIDTH - 1) {
-            x = 0;
+    if (direction == 'd') {
+        if (posX == MAP_WIDTH - 1) {
+            posX = 0;
         }
         else {
-            ++x;
+            ++posX;
         }
     }
-    if (dir == 'w') {
-        --y;
+    if (direction == 'w') {
+        --posY;
     }
-    if (dir == 's') {
-        ++y;
+    if (direction == 's') {
+        ++posY;
     }
     Show();
 }
 
 void Ghost::GetOpposite() {
-    if (dirOld == 'a') {
-        dirOpp = 'd';
+    if (directionOld == 'a') {
+        directionOps = 'd';
     }
-    if (dirOld == 'd') {
-        dirOpp = 'a';
+    if (directionOld == 'd') {
+        directionOps = 'a';
     }
-    if (dirOld == 'w') {
-        dirOpp = 's';
+    if (directionOld == 'w') {
+        directionOps = 's';
     }
-    if (dirOld == 's') {
-        dirOpp = 'w';
+    if (directionOld == 's') {
+        directionOps = 'w';
     }
 }
 
@@ -232,10 +229,7 @@ void Ghost::Show() {
 }
 
 void Ghost::Hide() {
-    SetTextColor(WHITE);
-    if (game->GetLevel(y, x) == 'o') {
-        SetTextColor(game->GetPelletColor());
-    }
+    SetTextColor(0);
     SetCursorPosition(y, x);
-    cout << game->GetLevel(y, x);
+    cout << game->GetMapChar(posY, posX);
 }

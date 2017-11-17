@@ -5,13 +5,13 @@ class Game;
 
 class Ghost {
 private:
-    int y, x;
-    int yInit, xInit;
+    int posX,posY;
+    int posXinit, posYinit;
     int wait;
     int color;
-    char dir;
-    char dirOld;
-    char dirOpp;
+    char direction;
+    char directionOld;
+    char directionOps;
     char mode;
     char modeOld;
     char icon;
@@ -21,27 +21,26 @@ private:
 public:
     Ghost(Game *const g);
     void Move(int, int);
-    void TargetObject(bool[4]);
+    void HunterMode(bool[4]);
     void RandomDirection();
-    bool TestForCollision();
-    void ChangeCoords();
+    bool TestCollision();
+    void coordsChanges();
     void GetOpposite();
     void Show();
     void Hide();
 
-    int GetY()         { return y;         }
-    int GetX()         { return x;         }
-    int GetYInit()     { return yInit;     }
-    int GetXInit()     { return xInit;     }
-    int GetColor()     { return color;     }
+    int GetPosY()         { return y;         }
+    int GetPosX()         { return x;         }
+    int GetPosYInit()     { return yInit;     }
+    int GetPosXInit()     { return xInit;     }
     char GetMode()     { return mode;      }
 
-    void SetY(int y)         { this->y = y;   }
-    void SetX(int x)         { this->x = x;   }
-    void SetYInit(int y)     { yInit = y;     }
-    void SetXInit(int x)     { xInit = x;     }
+    void SetPosY(int y)         { this->y = y;   }
+    void SetPosX(int x)         { this->x = x;   }
+    void SetPosYInit(int y)     { yInit = y;     }
+    void SetPosXInit(int x)     { xInit = x;     }
     void SetWait(int w)      { wait = w;      }
-    void SetDirOpp(char d)   { dirOpp = d;    }
+    void SetDirectionOpp(char d)   { dirOpp = d;    }
     void SetMode(char m)     { mode = m;      }
     void SetModeOld(char m)  { modeOld = m;   }
     void SetIcon(char i)     { icon = i;      }
