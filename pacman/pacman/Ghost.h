@@ -4,38 +4,48 @@
 class Game;
 
 class Ghost {
-	private:
-		int posX, posY;
-		int posXinit, posYinit;
-		char direction;
-		char directionOld;
-		char directionOpp;
-		bool agressiveMode;
-		char icon;
-		
-		Game *game;
+private:
+    int y, x;
+    int yInit, xInit;
+    int wait;
+    int color;
+    char dir;
+    char dirOld;
+    char dirOpp;
+    char mode;
+    char modeOld;
+    char icon;
 
-	public:
-		Ghost(Game *const g);
-		void move(int, int);
-		void persecution(bool[4]);
-		void randonMoviment();
-		bool collisionTest();
-		void coordsChange();
-		void getOpp();
+    Game *game;
 
-		int getPosX() { return posX; }
-		int getPosY() { return posY; }
-		bool getMode() { return agressiveMode; }
-		int getPosXinit() { return posXinit; }
-		int getPosYinit() { return posYinit; }
+public:
+    Ghost(Game *const g);
+    void Move(int, int);
+    void TargetObject(bool[4]);
+    void RandomDirection();
+    bool TestForCollision();
+    void ChangeCoords();
+    void GetOpposite();
+    void Show();
+    void Hide();
 
-		void setMode(bool mode) { agressiveMode = mode; }
-		void setPosX(int posX) { this->posX = posX; }
-		void setPosY(int posY) { this->posY = posY; }
-		void SetDirOpp(char d) { directionOpp = d; }
-		void setXinit(int posXi) { posXinit = posXi; }
-		void setYinit(int posYi) { posYinit = posYi; }
+    int GetY()         { return y;         }
+    int GetX()         { return x;         }
+    int GetYInit()     { return yInit;     }
+    int GetXInit()     { return xInit;     }
+    int GetColor()     { return color;     }
+    char GetMode()     { return mode;      }
 
+    void SetY(int y)         { this->y = y;   }
+    void SetX(int x)         { this->x = x;   }
+    void SetYInit(int y)     { yInit = y;     }
+    void SetXInit(int x)     { xInit = x;     }
+    void SetWait(int w)      { wait = w;      }
+    void SetDirOpp(char d)   { dirOpp = d;    }
+    void SetMode(char m)     { mode = m;      }
+    void SetModeOld(char m)  { modeOld = m;   }
+    void SetIcon(char i)     { icon = i;      }
+	void SetColor(int cor) { color = cor; }
 };
+
 #endif
