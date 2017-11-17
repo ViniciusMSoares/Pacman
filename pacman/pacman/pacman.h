@@ -24,7 +24,7 @@ public:
     Pacman(Game *const g);
     void Move();
     void GetDirection();
-    bool TestForCollision();
+    bool TestCollision();
     void PrintScore(int);
     void PrintLives();
     void Dead();

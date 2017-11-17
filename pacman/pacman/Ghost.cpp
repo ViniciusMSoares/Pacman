@@ -4,7 +4,7 @@
 
 #include "Game.h"
 #include "Ghost.h"
-#include "SetConsoleAttributes.h"
+#include "Interface.h"
 
 using namespace std;
 
@@ -51,12 +51,7 @@ void Ghost::Move(int playerY, int playerX) {
             }
             else {
                 modeOld = mode;
-                if (color == BLUE) {
-                    mode = 'r';
-                }
-                else {
-                    mode = 'c';
-                }
+                mode="c";
                 directionOld = 'w';
                 wait = 0;
             }
@@ -142,7 +137,7 @@ void Ghost::HunterMode(bool favorableDirections[4]) {
 void Ghost::RandomDirection() {
     GetOpposite();
     do {
-        // pick a randon direction that is not opposite of the previous direction
+        //direção aleatoria
         do {
             dir = DIRECTION[rand() % 4];
         } while (direction == directionOpp);
@@ -151,16 +146,14 @@ void Ghost::RandomDirection() {
 }
 
 bool Ghost::TestCollision() {
-    // if the character in front of the ghost is a space, move in the appropriate direction
     switch(direction) {
     case 'a':
-        // if travelling through the tunnel
+        // viagem pela lateral do mapa
         if (posX == 0 || strchr(NO_COLLISION_CHAR, game->GetMapChar(posY, posX - 1))) {
             return false;
         }
         break;
     case 'd':
-        // if travelling through the tunnel
         if (posX == MAP_WIDTH - 1 || strchr(NO_COLLISION_CHARISION_TILES, game->GetMapChar(posY, posX + 1))) {
             return false;
         }

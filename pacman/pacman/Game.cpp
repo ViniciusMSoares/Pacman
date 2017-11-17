@@ -6,7 +6,7 @@
 #include "Game.h"
 #include "Pacman.h"
 #include "Ghost.h"
-#include "SetConsoleAttributes.h"
+#include "Interface.h"
 
 using namespace std;
 
