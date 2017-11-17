@@ -134,7 +134,7 @@ void Pacman::Dead() {
         game->InitAll();
         game->ShowAll();
         PrintLives();
-        game->PrintStart();
+        game->PrintReady();
     }
     else {
         game->PrintGameOver();

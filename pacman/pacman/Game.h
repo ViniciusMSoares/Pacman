@@ -42,6 +42,7 @@ public:
 
     void SetMapChar(int y, int x, char c) { map[y][x] = c;    }
     void SetOneUpTimer(int t)           { oneUpTimer = t;     }
+    void SetOneUpColor(int c)           { oneUpColor = c;     }
     void SetGhostModeTimer(int t)       { ghostModeTimer = t; }
 };
 
